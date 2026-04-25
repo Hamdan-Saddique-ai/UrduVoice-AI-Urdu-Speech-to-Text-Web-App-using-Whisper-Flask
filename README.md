@@ -23,7 +23,6 @@ It allows users to record audio directly from the browser or upload audio files 
 **Backend**
 - Python
 - Flask
-
 **AI Model**
 - OpenAI Whisper (`medium` model)
 
@@ -52,30 +51,7 @@ urdu_speech_app/
 
 ---
 
-## ⚙️ Installation
 
-### 1️⃣ Clone Repository
-```bash
-git clone https://github.com/your-username/urduvoice-ai.git
-cd urduvoice-ai
-2️⃣ Install Dependencies
-pip install -r requirements.txt
-3️⃣ Install FFmpeg (Required)
-Windows: Download from https://ffmpeg.org
-Linux:
-sudo apt install ffmpeg
-▶️ Run the App
-python app.py
-
-Open in browser:
-
-http://127.0.0.1:5000
-🧠 How It Works
-User records audio OR uploads a file
-Audio is sent to Flask backend
-Whisper model processes audio (language="ur")
-Urdu text is returned as JSON
-Text is displayed in RTL format on UI
 🌍 Use Cases
 Urdu dictation
 Content creation
