@@ -53,18 +53,18 @@ urdu_speech_app/
 
 
 ## 🌍 Use Cases
-Urdu dictation
-Content creation
-Accessibility tools
-Voice-based note taking
-Educational tools
-## 🔮 Future Improvements
-🔴 Real-time streaming transcription
-🌐 Multi-language support
-🔊 Speaker identification
-☁️ Cloud deployment (AWS / Render)
-🌍 Urdu → English translation
-🤝 Contributing
+Urdu dictation  
+Content creation  
+Accessibility tools      
+Voice-based note taking   
+Educational tools         
+## 🔮 Future Improvements  
+🔴 Real-time streaming transcription   
+🌐 Multi-language support  
+🔊 Speaker identification          
+☁️ Cloud deployment (AWS / Render)   
+🌍 Urdu → English translation  
+🤝 Contributing 
 
 Contributions are welcome! Feel free to fork the repo and submit a pull request.
 
