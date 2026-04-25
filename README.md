@@ -52,13 +52,13 @@ urdu_speech_app/
 ---
 
 
-🌍 Use Cases
+## 🌍 Use Cases
 Urdu dictation
 Content creation
 Accessibility tools
 Voice-based note taking
 Educational tools
-🔮 Future Improvements
+## 🔮 Future Improvements
 🔴 Real-time streaming transcription
 🌐 Multi-language support
 🔊 Speaker identification
