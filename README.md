@@ -39,8 +39,7 @@ It allows users to record audio directly from the browser or upload audio files 
 ---
 
 ## 📁 Project Structure
-# UrduVoice-AI-Urdu-Speech-to-Text-Web-App-using-Whisper-Flask
-AI-powered Urdu Speech-to-Text web application built with Flask and Whisper. Record or upload audio and get accurate Urdu transcription instantly.
+
 urdu_speech_app/
 ├── app.py
 ├── requirements.txt
