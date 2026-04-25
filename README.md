@@ -3,7 +3,7 @@
 UrduVoice AI is a modern AI-powered web application that converts **Urdu speech into text** using OpenAI Whisper.  
 It allows users to record audio directly from the browser or upload audio files and receive accurate Urdu transcriptions instantly.
 
----
+--
 
 ## 🚀 Features
 
