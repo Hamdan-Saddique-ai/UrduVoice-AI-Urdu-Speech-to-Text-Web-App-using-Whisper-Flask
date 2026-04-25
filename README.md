@@ -68,14 +68,14 @@ Educational tools
 
 Contributions are welcome! Feel free to fork the repo and submit a pull request.
 
-📜 License
+## 📜 License
 
 This project is open-source and available under the MIT License.
 
-👨‍💻 Author
+## 👨‍💻 Author
 
 Developed by Hamdan Saddique
 
-⭐ Support
+## ⭐ Support
 
 If you like this project, please give it a ⭐ on GitHub!
