@@ -38,6 +38,7 @@ It allows users to record audio directly from the browser or upload audio files 
 ---
 
 ## 📁 Screen Shorts
+<img width="713" height="611" alt="Image" src="https://github.com/user-attachments/assets/fa0b999a-41cf-4c6c-ab17-349e4a4e31d0" />
 
 
 
