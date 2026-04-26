@@ -37,7 +37,7 @@ It allows users to record audio directly from the browser or upload audio files 
 
 ---
 
-## 📁 Project Structure
+## 📁 Screen Shorts
 
 
 
