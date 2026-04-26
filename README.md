@@ -39,17 +39,10 @@ It allows users to record audio directly from the browser or upload audio files 
 
 ## 📁 Project Structure
 
-urdu_speech_app/
-├── app.py
-├── requirements.txt
-├── templates/
-│ └── index.html
-└── static/
-├── css/style.css
-└── js/main.js
 
 
 ---
+
 
 
 ## 🌍 Use Cases
