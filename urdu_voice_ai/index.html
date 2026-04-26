@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrduVoice AI - اردو سپیچ ٹو ٹیکسٹ</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="particles"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🎤</div>
+                <h1>UrduVoice AI</h1>
+            </div>
+            <p class="tagline">اردو تقریر کو متن میں بدلیں | AI-Powered Speech Recognition</p>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Record Card -->
+            <div class="card record-card">
+                <div class="card-icon">🎙️</div>
+                <h2>لیو ریکارڈنگ</h2>
+                <p class="card-desc">مائیکروفون سے براہ راست ریکارڈ کریں</p>
+                
+                <div class="record-controls">
+                    <button id="recordBtn" class="btn btn-record">
+                        <span class="btn-icon">🎤</span>
+                        <span class="btn-text">ریکارڈنگ شروع کریں</span>
+                    </button>
+                    <button id="stopBtn" class="btn btn-stop" disabled>
+                        <span class="btn-icon">⏹️</span>
+                        <span class="btn-text">ریکارڈنگ روکیں</span>
+                    </button>
+                </div>
+                
+                <div id="recordTimer" class="timer hidden">00:00</div>
+                <div id="recordStatus" class="status"></div>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="card upload-card">
+                <div class="card-icon">📁</div>
+                <h2>فائل اپ لوڈ</h2>
+                <p class="card-desc">MP3, WAV, M4A, OGG فائلز سپورٹ</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">☁️</div>
+                    <p>فائل کو یہاں ڈراپ کریں</p>
+                    <p class="upload-hint">یا کلک کریں</p>
+                    <input type="file" id="fileInput" accept=".mp3,.wav,.m4a,.ogg,.webm" hidden>
+                    <button class="btn btn-upload">فائل منتخب کریں</button>
+                </div>
+                
+                <div id="fileName" class="file-name hidden"></div>
+                <div id="uploadStatus" class="status"></div>
+            </div>
+
+            <!-- Result Card -->
+            <div class="card result-card">
+                <div class="card-icon">📝</div>
+                <h2>ٹرانسکرپشن</h2>
+                
+                <div class="result-toolbar">
+                    <button id="copyBtn" class="tool-btn" title="کاپی کریں">
+                        📋 کاپی
+                    </button>
+                    <button id="downloadBtn" class="tool-btn" title="ڈاؤن لوڈ کریں">
+                        💾 ڈاؤن لوڈ
+                    </button>
+                    <button id="clearBtn" class="tool-btn" title="صاف کریں">
+                        🗑️ صاف کریں
+                    </button>
+                </div>
+                
+                <div class="result-box">
+                    <div id="transcriptionText" class="transcription-text">
+                        <span class="placeholder">🎤 ریکارڈنگ یا فائل اپ لوڈ کریں...</span>
+                    </div>
+                </div>
+                
+                <div class="result-footer">
+                    <span id="charCount">📊 حروف: 0</span>
+                    <span id="wordCount" class="word-count">📖 الفاظ: 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h3>درست شناخت</h3>
+                <p>اعلیٰ معیار کی AI ٹیکنالوجی</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>تیز رفتار</h3>
+                <p>فوری ٹرانسکرپشن</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>پرائیویسی</h3>
+                <p>آپ کی ڈیٹا محفوظ</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-card">
+            <div class="spinner"></div>
+            <h3>پروسیسنگ ہو رہی ہے...</h3>
+            <p>براہ کرم انتظار کریں</p>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingStartTime = null;
+        let timerInterval = null;
+
+        // DOM Elements
+        const recordBtn = document.getElementById('recordBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const transcriptionText = document.getElementById('transcriptionText');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const recordStatus = document.getElementById('recordStatus');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const recordTimer = document.getElementById('recordTimer');
+        const fileName = document.getElementById('fileName');
+
+        // Helper Functions
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        function updateStats(text) {
+            const chars = text.length;
+            const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            charCount.textContent = `📊 حروف: ${chars}`;
+            wordCount.textContent = `📖 الفاظ: ${words}`;
+        }
+
+        function displayTranscription(text) {
+            if (text && text.trim()) {
+                transcriptionText.innerHTML = `<p>${escapeHtml(text)}</p>`;
+                updateStats(text);
+            } else {
+                transcriptionText.innerHTML = '<span class="placeholder">🎤 کوئی متن نہیں ملا</span>';
+                updateStats('');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showStatus(element, message, type = 'info') {
+            element.textContent = message;
+            element.className = `status ${type}`;
+            setTimeout(() => {
+                if (element.textContent === message) {
+                    element.textContent = '';
+                    element.className = 'status';
+                }
+            }, 3000);
+        }
+
+        async function sendAudioToServer(audioBlob, filename = 'recording.webm') {
+            showLoading();
+            const formData = new FormData();
+            formData.append('audio', audioBlob, filename);
+            
+            try {
+                const response = await fetch('/transcribe', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    displayTranscription(result.text);
+                    showStatus(uploadStatus, '✅ ٹرانسکرپشن مکمل!', 'success');
+                } else {
+                    showStatus(uploadStatus, `❌ ${result.error || 'ٹرانسکرپشن میں خرابی'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(uploadStatus, '❌ سرور سے رابطہ نہیں ہوسکا', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Recording Functions
+        async function startRecording() {
+            audioChunks = [];
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    sendAudioToServer(audioBlob, 'recording.webm');
+                    stream.getTracks().forEach(track => track.stop());
+                    stopTimer();
+                };
+                
+                mediaRecorder.start(100);
+                isRecording = true;
+                recordBtn.disabled = true;
+                stopBtn.disabled = false;
+                startTimer();
+                showStatus(recordStatus, '🔴 ریکارڈنگ جاری ہے... بولنا شروع کریں', 'info');
+                recordTimer.classList.remove('hidden');
+            } catch (error) {
+                console.error('Microphone error:', error);
+                showStatus(recordStatus, '❌ مائیکروفون تک رسائی ممکن نہیں', 'error');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordBtn.disabled = false;
+                stopBtn.disabled = true;
+                showStatus(recordStatus, '⏹️ ریکارڈنگ ختم، پروسیسنگ...', 'info');
+            }
+        }
+
+        function startTimer() {
+            recordingStartTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                recordTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            recordTimer.classList.add('hidden');
+        }
+
+        // File Upload Functions
+        function handleFileUpload(file) {
+            if (!file) return;
+            
+            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-wav', 'audio/m4a', 'audio/ogg', 'audio/webm'];
+            const validExtension = /\.(mp3|wav|m4a|ogg|webm)$/i.test(file.name);
+            
+            if (!allowedTypes.includes(file.type) && !validExtension) {
+                showStatus(uploadStatus, '❌ صرف آڈیو فائلز (MP3, WAV, M4A, OGG)', 'error');
+                return;
+            }
+            
+            if (file.size > 50 * 1024 * 1024) {
+                showStatus(uploadStatus, '❌ فائل کا سائز 50MB سے زیادہ نہیں ہونا چاہیے', 'error');
+                return;
+            }
+            
+            fileName.textContent = `📄 ${file.name}`;
+            fileName.classList.remove('hidden');
+            showStatus(uploadStatus, '📤 فائل اپ لوڈ ہو رہی ہے...', 'info');
+            sendAudioToServer(file, file.name);
+        }
+
+        // Event Listeners
+        recordBtn.addEventListener('click', startRecording);
+        stopBtn.addEventListener('click', stopRecording);
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFileUpload(file);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFileUpload(file);
+        });
+        
+        copyBtn.addEventListener('click', async () => {
+            const text = transcriptionText.innerText;
+            if (text && text !== '🎤 ریکارڈنگ یا فائل اپ لوڈ کریں...' && text !== '🎤 کوئی متن نہیں ملا') {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '✅ کاپی شدہ';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                    showStatus(uploadStatus, '✅ متن کاپی ہوگیا!', 'success');
+                } catch (err) {
+                    showStatus(uploadStatus, '❌ کاپی کرنے میں خرابی', 'error');
+                }
+            } else {
+                showStatus(uploadStatus, '❌ کاپی کرنے کے لیے کوئی متن نہیں', 'error');
+            }
+        });
+        
+        downloadBtn.addEventListener('click', () => {
+            const text = transcriptionText.innerText;
+            if (text && text !== '🎤 ریکارڈنگ یا فائل اپ لوڈ کریں...' && text !== '🎤 کوئی متن نہیں ملا') {
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `urdu_transcription_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showStatus(uploadStatus, '✅ فائل ڈاؤن لوڈ ہوگئی!', 'success');
+            } else {
+                showStatus(uploadStatus, '❌ ڈاؤن لوڈ کرنے کے لیے کوئی متن نہیں', 'error');
+            }
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            transcriptionText.innerHTML = '<span class="placeholder">🎤 ریکارڈنگ یا فائل اپ لوڈ کریں...</span>';
+            updateStats('');
+            showStatus(uploadStatus, '🗑️ متن صاف ہوگیا', 'info');
+        });
+        
+        // Check browser support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            recordBtn.disabled = true;
+            showStatus(recordStatus, '❌ آپ کا براؤزر ریکارڈنگ سپورٹ نہیں کرتا', 'error');
+        }
+    </script>
+</body>
+</html>
