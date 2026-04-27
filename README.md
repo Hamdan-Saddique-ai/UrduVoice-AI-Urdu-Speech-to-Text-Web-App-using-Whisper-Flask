@@ -16,7 +16,6 @@ It allows users to record audio directly from the browser or upload audio files 
 - 📋 Copy transcription to clipboard
 - ⬇️ Download transcription as `.txt`
 - ⚡ Fast and accurate Urdu speech recognition
-
 ---
 
 ## 🛠️ Tech Stack
